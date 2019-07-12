@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Favorite Topics</title>
+    <style type="text/css">
+        button,
+        div,
+        form,
+        input {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Rendered Buttons will get Dumped Here  -->
+        <div id="buttons-view"></div>
+
+        <form id="topic-form">
+            <label for="topic-input">Add a Topic</label>
+            <input type="text" id="topic-input">
+            <br>
+
+            <!-- Button triggers new topics to be added -->
+            <input id="add-topic" type="submit" value="Add a topic, Brah!">
+        </form>
+
+        <!-- Topic will Get Dumped Here -->
+        <div id="topics-view"></div>
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            // Initial array of topics
+            var topics = ["Guitars", "Drums", "Saxaphone", "Violin"];
+
+
+
+            // Function for displaying topic data
+            function renderButtons() {
+                // console.log(topic);
+                // Deleting the topic prior to adding new topics
+                // (this is necessary otherwise you will have repeat buttons)
+                $("#buttons-view").empty();
+
+                // Looping through the array of topics
+                for (var i = 0; i < topics.length; i++) {
+
+                    // Then dynamicaly generating buttons for each topic in the array
+                    // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+                    var a = $("<button>");
+                    // Adding a class of topic-btn to our button
+                    a.addClass("topic-btn");
+                    //<button class="topic-btn"></button>
+                    // Adding a data-attribute
+                    a.attr("data-name", topics[i]);
+                    //<button class="topic-btn" data-name=guitars[i]></button>
+                    // Providing the initial button text
+                    a.text(topics[i]);
+                    //<button class="topic-btn" data-name=guitars[i]>guitars[i]</button>
+                    //<button class="topic-btn" data-name="Frozen">Frozen</button>
+                    // Adding the button to the buttons-view div
+                    $("#buttons-view").append(a);
+                }
+            }
+
+            // This function handles events where a topic button is clicked
+            $("#add-topic").on("click", function (event) {
+                event.preventDefault();
+                // This line grabs the input from the textbox
+                var topic = $("#topic-input").val().trim();
+
+                // Adding guitar from the textbox to our array
+                topics.push(topic);
+
+                // Calling renderButtons which handles the processing of our topic array
+                renderButtons();
+            });
+
+            // Adding a click event listener to all elements with a class of "toppic-btn"
+            $(document).on("click", ".topic-btn", displaytopicsInfo);
+
+            // displayMovieInfo function re-renders the HTML to display the appropriate content
+            function displaytopicsInfo() {
+
+                var topic = $(this).attr("data-name");
+                console.log(topic);
+                var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + topic + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=5&rating=G&lang=en";
+
+                // Creating an AJAX call for the specific topic button being clicked
+                $.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).then(function (response) {
+                    console.log(response.data);
+
+                    // Creating a div to hold the topic
+                    var topicDiv = $("<div class='topic'>");
+                    //<div class="topic"></div>
+
+                    for (var i = 0; i < response.data.length; i++) {
+                        console.log(response.data[i].images.fixed_height.url)
+
+                        var gifContainer = $("<div class='gifContainer'>")
+                        // console.log(gifContainer)
+                        gifContainer.append($("<img src='" + response.data[i].images.fixed_height.url + "'>"))
+                        gifContainer.append($("<p>rating: " + response.data[i].rating + "</p>"))
+                        $("#topics-view").append(gifContainer)
+                        console.log(response.data[i].rating);
+
+                        // Prepend images to top
+                        $("#topics-view").prepend($(gifContainer));
+                    }
+                });
+            }
+
+            // Calling the renderButtons function to display the intial buttons
+            renderButtons();
+
+        </script>
+    </div>
+</body>
+
+</html>
