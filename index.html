@@ -102,7 +102,7 @@
                     // Creating a div to hold the topic
                     var topicDiv = $("<div class='topic'>");
                     //<div class="topic"></div>
-
+console.log(response.data[0]);
                     // Looping the each result item  
                     for (var i = 0; i < response.data.length; i++) {
                         // console.log(response.data[i].images.fixed_height.url)
@@ -110,8 +110,12 @@
                         var gifContainer = $("<div class='gifContainer'>")
                         // console.log(gifContainer)
                         
-                        gifContainer.append($("<img src='" + response.data[i].images.fixed_height.url + "'>"))
-
+                        theGif=$("<img src='" + response.data[i].images.fixed_height_still.url + "'>")
+                        theGif.attr("data-state","still")
+                        theGif.attr("data-animate",response.data[i].images.fixed_height.url)
+                        theGif.attr("data-still",response.data[i].images.fixed_height_still.url)
+                        theGif.addClass("gif");
+                        gifContainer.append(theGif)
                         gifContainer.append($("<p>rating: " + response.data[i].rating + "</p>"))
 
                         $("#topics-view").append(gifContainer)
@@ -123,20 +127,20 @@
                 });
             }
 
-            $(".gif").on("click", function () {
-
+            $(document).on("click", ".gif", function () {
+                console.log("clicked");
                 // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
-                // var state = $(this).attr("data-state");
+                var state = $(this).attr("data-state");
                 // If the clicked image's state is still, update its src attribute to what its data-animate value is.
                 // Then, set the image's data-state to animate
                 // Else set src to the data-still value
-                // if (state === "still") {
-                //     $(this).attr("src", $(this).attr("data-animate"));
-                //     $(this).attr("data-state", "animate");
-                // } else {
-                //     $(this).attr("src", $(this).attr("data-still"));
-                //     $(this).attr("data-state", "still");
-                // }
+                if (state === "still") {
+                    $(this).attr("src", $(this).attr("data-animate"));
+                    $(this).attr("data-state", "animate");
+                } else {
+                    $(this).attr("src", $(this).attr("data-still"));
+                    $(this).attr("data-state", "still");
+                }
             });
             //             url: "https://media1.giphy.com/media/110LFDlJVV04nK/200_s.gif"
             // width: "483"
